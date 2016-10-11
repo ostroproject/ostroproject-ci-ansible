@@ -1,0 +1,17 @@
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server ipv6only=on;
+
+	root {{ web_document_root }};
+	index index.html index.htm;
+
+	server_name {{ ansible_nodename }} {{ ci_server_alias }};
+
+	location {{ download_location }} {
+                alias {{ store_base_path }};
+                autoindex on;
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+}

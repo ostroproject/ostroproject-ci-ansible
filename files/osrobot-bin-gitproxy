@@ -1,0 +1,9 @@
+#!/bin/bash
+echo $1 | grep -q '.int$' \
+        && nc $1 $2 \
+        || nc -x proxy $1 $2
+#echo $1 | grep -q '.int$' \
+#        && corkscrew $1 $2 \
+#        || corkscrew 192.168.174.1 8080 $1 $2
+#[ -n "$proxy" ] || proxy="192.168.174.1"
+#socat STDIO SOCKS4:$proxy:$1:$2

@@ -1,0 +1,10 @@
+# To update job-dsl-standalone.jar in this directory:
+
+BIN=`pwd`
+git clone https://github.com/jenkinsci/job-dsl-plugin.git
+pushd job-dsl-plugin
+git checkout -b last_tag `git describe --abbrev=0`
+./gradlew :job-dsl-core:oneJar
+DSL_JAR=$(find job-dsl-core -name '*standalone.jar'|tail -1)
+cp $DSL_JAR $BIN/job-dsl-standalone.jar
+popd

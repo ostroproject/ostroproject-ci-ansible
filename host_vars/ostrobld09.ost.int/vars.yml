@@ -1,0 +1,3 @@
+workername: ostro-bld-09
+autossh_monitor_port: 21090
+gw_host: a1

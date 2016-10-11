@@ -1,0 +1,5 @@
+---
+proxy_enabled: "yes"
+no_proxy: localhost, 127.0.0.1
+http_proxy: ""
+https_proxy: "{{ http_proxy }}"

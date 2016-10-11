@@ -1,0 +1,20 @@
+[Unit]
+Description=Keep ssh tunnel open
+After=network.target
+
+[Service]
+User=autossh
+# -p [PORT]
+# -l [user]
+# -M 0 --> no monitoring
+# -N Just open the connection and do nothing (not interactive)
+# LOCALPORT:IP_ON_EXAMPLE_COM:PORT_ON_EXAMPLE_COM
+{% if ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap' %}
+ExecStart=/usr/bin/autossh -M {{ autossh_monitor_port }} -N {{ gw_host }}
+{% endif %}
+{% if ansible_distribution == 'Fedora' %}
+ExecStart=/bin/autossh -M {{ autossh_monitor_port }} -N {{ gw_host }}
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target

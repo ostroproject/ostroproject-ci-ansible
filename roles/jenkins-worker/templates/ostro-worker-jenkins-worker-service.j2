@@ -1,0 +1,26 @@
+[Unit]
+# Rename and customize one instance of this file for every 
+# Jenkins slave needed.
+Description=Self-initiated Jenkins slave
+After=autossh.service
+
+[Service]
+# The wget command ensures that the slave.jar file is kept in sync
+# with the one expected by the master.
+
+User=jenkins
+# give autossh some time to st up tunnels
+ExecStartPre=/bin/sleep 30
+{% if ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap' %}
+ExecStartPre=/bin/bash -c "/usr/bin/wget --no-check-certificate http://localhost:{{ jenkins_port }}/jenkins/jnlpJars/slave.jar -O /var/lib/jenkins/slave.jar"
+ExecStart=/usr/bin/java -jar /var/lib/jenkins/slave.jar -jnlpUrl http://localhost:{{ jenkins_port }}/jenkins/computer/{{ workername }}/slave-agent.jnlp -noCertificateCheck -secret {{ jnlp_secret }}
+{% endif %}
+{% if ansible_distribution == 'Fedora' %}
+ExecStartPre=/bin/bash -c "/bin/wget --no-check-certificate http://localhost:{{ jenkins_port }}/jenkins/jnlpJars/slave.jar -O /var/lib/jenkins/slave.jar"
+ExecStart=/bin/java -jar /var/lib/jenkins/slave.jar -jnlpUrl http://localhost:{{ jenkins_port }}/jenkins/computer/{{ workername }}/slave-agent.jnlp -noCertificateCheck -secret {{ jnlp_secret }} -slaveLog /var/tmp/jenkins-slave-log
+{% endif %}
+
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

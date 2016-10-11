@@ -1,0 +1,17 @@
+# example layout of disk partitions:
+# root@ostrobld01:/etc# partx -l /dev/sda
+# 1:      2048-     4095 (     2048 sectors,      1 MB)
+# 2:      4096- 78129151 ( 78125056 sectors,  40000 MB)
+# 3:  78129152-203128831 (124999680 sectors,  63999 MB)
+# 4: 203128832-6645579775 (6442450944 sectors, 3298534 MB)
+# 5: 6645579776-6829899742 (184319967 sectors,  94371 MB)
+#
+
+- name: srv partition formatted ext4 with label=srv
+  filesystem: fstype=ext4 dev=/dev/{{ srv_partition }} opts='-L srv'
+
+- name: srv partition mounted on /srv
+  mount: name=/srv src='LABEL=srv' fstype=ext4 state=mounted opts='errors=remount-ro'
+
+#- name: nfs mount of store_base from store server
+#  mount: name={{ store_base_path }} src=ostrostore.ost.int:{{ store_base_path }} fstype=nfs state=mounted

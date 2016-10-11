@@ -1,0 +1,14 @@
+- name: build_storage_base directory exists
+  file: state=directory path={{ build_storage_base }} mode=755 owner=jenkins group={{ jenkins_gid }}
+- name: build_storage_base/builds directory exists
+  file: state=directory path={{ build_storage_base }}/builds mode=755 owner=jenkins group={{ jenkins_gid }}
+- name: build_storage_base/updates directory exists
+  file: state=directory path={{ build_storage_base }}/updates mode=755 owner=jenkins group={{ jenkins_gid }}
+- name: build_storage_base/buildhistory directory exists
+  file: state=directory path={{ build_storage_base }}/buildhistory mode=755 owner=jenkins group={{ jenkins_gid }}
+- name: build_storage base/bb-cache/sstate directory exists
+  file: state=directory path={{ build_storage_base }}/bb-cache/sstate mode=755 owner=jenkins group={{ jenkins_gid }}
+- name: build_storage_base/ci/workers-cache directory exists
+  file: state=directory path={{ build_storage_base }}/ci/workers-cache mode=755 owner=jenkins group={{ jenkins_gid }}
+- name: jenkins_home/pr_server/master directory exists
+  file: state=directory path={{ jenkins_home }}/pr_server/master mode=755 owner=jenkins group={{ jenkins_gid }}

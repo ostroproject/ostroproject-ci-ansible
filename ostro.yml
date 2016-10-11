@@ -1,0 +1,260 @@
+###########################
+# Ostro Jenkins master
+# note: both osrobot and stg-osrobot are covered by this common block
+###########################
+- hosts: jenkins
+  sudo: yes
+  vars:
+    hub_version: 2.2.8
+
+  tasks:
+    - name: Install packages
+      zypper: name={{ item }} state=installed
+      with_items:
+       - git-core
+       - python
+       - python-xml
+       #- python-GitPython
+       - patch
+       - patchutils
+       - netcat-openbsd
+       - python3-Sphinx
+       - python3
+
+    - name: put master gitproxy cmd to /usr/local/bin for jenkins
+      copy: src=files/osrobot-bin-gitproxy dest=/usr/local/bin/gitproxy mode=0755 owner=root group=root
+
+    - name: jenkins/.config directory exists
+      file: state=directory path=/var/lib/jenkins/.config mode=700 owner=jenkins group=jenkins
+
+    - name: jenkins/ci-export directory exists
+      file: state=directory path=/var/lib/jenkins/ci-export mode=755 owner=jenkins group=jenkins
+
+    - name: jenkins/ci-testresults-cache directory exists
+      file: state=directory path=/var/lib/jenkins/ci-testresults-cache mode=755 owner=jenkins group=jenkins
+
+    - name: put jenkins config for hub access
+      template: src=files/osrobot-jenkins-config-hub.j2 dest=/var/lib/jenkins/.config/hub mode=0640 owner=jenkins group=jenkins
+
+    - name: put hub binary
+      copy: src=files/hub-{{ hub_version }} dest=/usr/local/bin/hub mode=0755 owner=root group=root
+
+    - name: git_mirror directory exists
+      file: state=directory path=/srv/git_mirror mode=755 owner=jenkins group=jenkins
+
+    - name: put jenkins system config
+      template: src=files/osrobot-etc-sysconfig-jenkins.j2 dest=/etc/sysconfig/jenkins mode=0644 owner=root group=root
+
+###########################
+- hosts: download
+  sudo: yes
+
+  tasks:
+    - name: Install packages
+      zypper: name={{ item }} state=installed
+      with_items:
+       - java
+
+    - user: name=jenkins uid={{ jenkins_uid }} shell=/bin/bash home=/var/lib/jenkins comment='Jenkins user'
+    - group: name=jenkins gid={{ jenkins_gid }}
+
+    - name: jenkins home directory exists owned by jenkins
+      file: state=directory path=/var/lib/jenkins mode=700 owner=jenkins group=jenkins
+
+    - name: put jenkins-worker.service
+      template: src=files/ostro-download-jenkins-worker-service.j2 dest=/etc/systemd/system/jenkins-worker.service mode=0644 owner=root group=root
+
+    - name: jenkins-worker is enabled and running
+      service: name=jenkins-worker state=running enabled=yes
+
+
+###########################
+- hosts: docker-workers-ubuntu
+  sudo: yes
+
+  roles:
+    - workers-ubuntu-env
+    - autossh-tunnel
+    - ntp-client
+    - workers-packages
+    - docker-worker-mounts
+    - store-nfs-mount
+    - jenkins-worker
+    - jenkins-worker-config
+    - docker-host
+
+  tasks:
+    - user: name=jenkins groups=docker append=yes
+      notify:
+        - restart jenkins-worker
+
+    - name: Install docker-worker packages
+      apt: name={{ item }} state=installed
+      with_items:
+       - socat
+# following are needed because we run build out of docker
+       - python
+       - python3
+       - make
+       - patch
+       - diffstat
+       - gcc
+       - g++
+       - chrpath
+       - texinfo
+       - libSDL-dev
+
+###########################
+- hosts: tester
+  sudo: yes
+  roles:
+    - ntp-client
+    - munin-client
+    - autossh-tunnel
+
+  tasks:
+    - name: Install packages
+      zypper: name={{ item }} state=installed
+      with_items:
+        - java
+        - expect
+        - nfs-kernel-server
+        - dnsmasq
+        - psutils
+        - psmisc
+        - git
+        - gcc
+        - gcc-c++
+        - make
+        - automake
+        - cmake
+        - autoconf
+        - man
+        - emacs
+        - nano
+        - screen
+        - tree
+        - attr
+        - dnsmasq
+        - gdisk
+        - nfs-kernel-server
+        - python
+        - python-setuptools
+        - python-devel
+        - python-tk
+        - python-idle
+        - ipython
+        - libusb-1_0-devel
+        - usbutils
+        - tftp
+        - yast2-tftp-server
+        - guestfs-tools
+        - python3
+        - python-unittest-xml-reporting
+        #- python3-unittest-xml-reporting
+        - python-pip
+        - python-six
+        - python3-six
+        - socat
+
+    # user for jenkins (historically called tester) configured here
+    - group: name=ci-testing state=present
+    - user: name=tester shell=/bin/bash comment='CI tester user' groups=ci-testing
+
+    - name: tester directory exists
+      file: state=directory path={{ jenkins_tester_dir }} mode=755 owner=tester group=users
+
+    - name: put jenkins-tester.service
+      template: src=files/ostro-jenkins-tester-service.j2 dest=/etc/systemd/system/jenkins-tester.service mode=0644 owner=root group=root
+
+    - name: jenkins-tester service is enabled and running
+      service: name=jenkins-tester state=running enabled=yes
+
+    - name: key for testers WLAN in lab
+      copy: src=files/ostro-tester-config-ini-wlan dest=/home/tester/.config.ini.wlan mode=0600 owner=tester group=users
+
+###########################
+# Ostro CI coordinator
+# This is Ubuntu 14.04 host
+###########################
+- hosts: ci
+
+  sudo: yes
+  roles:
+    - ntp-client
+    - webserver-apache
+    - webserver-nginx
+    - autossh-tunnel
+    - store-nfs-mount
+    - jenkins-worker
+    - coordinator-dir-structure
+
+  tasks:
+
+#### common for both possible web servers
+    - name: put www/htdocs/index.html
+      template: src=files/ostro-ostc-htdocs-index-html.j2 dest={{ web_document_root }}/var/www/html/index.html mode=0644 owner=root group=root
+
+#### apache config
+    - name: apache vhost config in sites-available
+      template: src=files/ostroci-etc-apache2-vhost-conf.j2 dest=/etc/apache2/sites-available/ostro.conf mode=0644 owner=root group=root
+
+    - name: apache vhost config symlink in sites-enabled
+      file: state=link path=/etc/apache2/sites-enabled/ostro.conf src=../sites-available/ostro.conf owner=root group=root
+
+#### nginx config
+    - name: nginx config
+      template: src=files/ostroci-etc-nginx-conf.j2 dest=/etc/nginx/nginx.conf mode=0644 owner=root group=root
+
+    - name: nginx vhost config in sites-available
+      template: src=files/ostroci-etc-nginx-vhost-conf.j2 dest=/etc/nginx/sites-available/ostro mode=0644 owner=root group=root
+
+    - name: nginx mime.types
+      copy: src=files/ostroci-etc-nginx-mime-types dest=/etc/nginx/mime.types mode=0644 owner=root group=root
+
+    - name: nginx vhost config symlink in sites-enabled
+      file: state=link path=/etc/nginx/sites-enabled/ostro src=../sites-available/ostro owner=root group=root
+
+#### common enable via variable name
+    - name: selected web server is running and enabled
+      service: name={{ webserver }} state=running enabled=yes
+
+###########################
+# Ostro CI store
+# This is CentOS 7 host
+###########################
+
+- hosts: store
+  sudo: yes
+  roles:
+    - ntp-client
+
+  tasks:
+    - name: Install packages
+      yum: name={{ item }} state=present
+      with_items:
+       - nfs-utils
+
+    - name: store basepath directory exists
+      file: state=directory path={{ store_base_path }} mode=755 owner={{ jenkins_uid }} group={{ jenkins_gid }}
+
+    - name: put rsyncd config
+      template: src=files/ostrostore-rsyncd-conf.j2 dest=/etc/rsyncd.conf mode=0644 owner=root group=root
+
+    - name: rsyncd is enabled and running
+      service: name=rsyncd state=running enabled=yes
+
+    - name: put /etc/exports
+      template: src=files/ostrostore-etc-exports.j2 dest=/etc/exports mode=0644 owner=root group=root
+
+    - name: nfs-server is enabled and running
+      service: name=nfs-server state=running enabled=yes
+
+###########################
+# Ostro CI gw
+# This is Ubuntu 14.04
+###########################
+- hosts: gw
+  sudo: yes
+  roles:
+    - ntp-client

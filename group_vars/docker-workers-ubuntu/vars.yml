@@ -1,0 +1,12 @@
+http_proxy: http://172.16.20.1:911
+no_proxy: localhost,127.0.0.1,.ost.int
+git_ssh_proxy: 172.16.20.1
+autossh_proxy: 172.16.20.1:1080
+autossh_iface: p3p1.18
+apt_http_proxy: ostrogw.ost.int
+apt_http_proxy_port: 911
+repo_gw_path: http://ostrogw.ost.int:8000/pub/mirrors/ubuntu/
+ntp_server: ostrogw.ost.int
+jenkins_home: /srv/jenkins
+srv_partition: sda4
+docker_partition: sda5

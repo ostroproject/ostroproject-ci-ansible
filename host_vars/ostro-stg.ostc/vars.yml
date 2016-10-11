@@ -1,0 +1,5 @@
+workername: workers-coordinator
+autossh_monitor_port: 20080
+gw_host: a1
+nfs_server_cache: 192.168.175.6
+coord_addr_on_workernet: 192.168.174.8

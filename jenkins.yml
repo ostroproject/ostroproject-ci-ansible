@@ -1,0 +1,12 @@
+---
+- hosts: jenkins
+  # enable when really needed
+  gather_facts: no
+
+  tasks:
+  - name: Jenkins URL
+    debug: var=jenkins_url
+
+  # handlers:
+  roles:
+    - jenkins_seed

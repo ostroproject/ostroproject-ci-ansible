@@ -1,0 +1,46 @@
+- name: Add docker apt repo
+  apt_repository:
+      repo='deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main'
+      state=present
+
+- name: Import the Docker repository key
+  apt_key: keyserver=p80.pool.sks-keyservers.net id=58118E89F3A912897C070ADBF76221572C52609D state=present
+  environment:
+    http_proxy: "{{ http_proxy }}"
+
+- name: Install ostro-workers-docker specific packages on Ubuntu
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - docker-engine
+    - lvm2
+
+- name: docker volume group
+  lvg: vg=docker pvs=/dev/{{ docker_partition }}
+
+- name: lvcreate docker thinpool
+  lvol: lv=thinpool vg=docker size=95%VG
+
+- name: lvcreate docker thinpoolmeta
+  lvol: lv=thinpoolmeta vg=docker size=1%VG
+
+- name: convert docker LV to thinpool
+# wildcard match in ansible > 2.0
+#  command: lvconvert -y --zero n -c 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta creates=/dev/mapper/docker-thinpool_t*
+  command: lvconvert -y --zero n -c 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta creates=/dev/mapper/docker-thinpool_tdata
+
+
+- name: dir /etc/lvm/profile exist
+  file: state=directory path=/etc/lvm/profile mode=755 owner=root group=root
+
+- name: put LV profile for thinpool
+  copy: src=docker-thinpool.profile dest=/etc/lvm/profile/docker-thinpool.profile mode=0644 group=root
+#  notify:
+#    - activate lvm profile
+
+- name: put /etc/default/docker on Ubuntu
+  template: src=etc-default-docker.j2 dest=/etc/default/docker mode=0644 owner=root group=root
+  notify:
+    - restart docker
+
+- name: docker is enabled and running
+  service: name=docker state=running enabled=yes

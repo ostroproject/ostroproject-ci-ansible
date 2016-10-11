@@ -1,0 +1,16 @@
+#
+# VirtualHosts serving http
+#
+<VirtualHost *:80>
+    DocumentRoot {{ web_document_root }}
+    ServerAlias {{ ci_server_alias }}
+    ServerName {{ ansible_nodename }}
+
+    Alias {{ download_location }} {{ store_base_path }}
+    <Directory {{ store_base_path }}>
+      AllowOverride None
+      Require all granted
+      DirectoryIndex disabled
+      Options Indexes FollowSymlinks
+    </Directory>
+</VirtualHost>

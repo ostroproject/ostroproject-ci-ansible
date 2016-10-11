@@ -1,0 +1,6 @@
+---
+website_url: https://ostroproject.org
+download_url: https://download.ostroproject.org
+jenkins_url: "{{ website_url }}/jenkins"
+jenkins_port: 8000
+bb_cache_dir: /mnt/bb-cache

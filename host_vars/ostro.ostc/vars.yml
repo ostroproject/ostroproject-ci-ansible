@@ -1,0 +1,7 @@
+workername: workers-coordinator
+autossh_monitor_port: 20070
+gw_host: a1
+nfs_server_cache: 192.168.175.6
+coord_addr_on_workernet: 192.168.174.7
+build_storage_base: /srv/download
+jenkins_gid: 100

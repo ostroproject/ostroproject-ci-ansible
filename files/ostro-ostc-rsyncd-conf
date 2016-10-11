@@ -1,0 +1,33 @@
+#
+# NOTE! ansible_managed file
+#
+gid = users
+read only =  false
+use chroot = true
+transfer logging = true
+log format = %h %o %f %l %b
+log file = /var/log/rsyncd.log
+pid file = /var/run/rsyncd.pid
+hosts allow = trusted.hosts
+slp refresh = 300
+use slp = false
+uid=jenkins
+gid=users
+
+[ci]
+	path = /srv/download/ci
+	comment = Ostro workers CI specific area
+        hosts allow = ostro-worker-*
+        read only = false
+
+[publish]
+	path = /srv/download/builds
+	comment = Ostro builds publish area
+        hosts allow = ostro-worker-*
+        read only = false
+
+[update]
+	path = /srv/download/update
+	comment = Ostro SW update area
+        hosts allow = ostro-worker-*
+        read only = false

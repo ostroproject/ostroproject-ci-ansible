@@ -1,0 +1,7 @@
+# This file managed by OTC Infrastructure ansible automation
+# Any local changes will be overwritten
+# {{ ansible_managed }}
+Acquire::http::Proxy "http://{{ apt_http_proxy }}:{{ apt_http_proxy_port }}";
+Acquire::http::Proxy::{{ apt_http_proxy }} "DIRECT";
+Acquire::https::Proxy::{{ apt_http_proxy }} "DIRECT";
+

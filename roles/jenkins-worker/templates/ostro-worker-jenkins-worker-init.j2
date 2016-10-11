@@ -1,0 +1,18 @@
+description "jenkins worker"
+ 
+start on started autossh
+stop on runlevel [016]
+ 
+respawn
+respawn limit 0 0
+
+pre-start script
+    sleep 30
+    /usr/bin/wget --no-check-certificate http://localhost:{{ jenkins_port }}/jenkins/jnlpJars/slave.jar -O {{ jenkins_home }}/slave.jar
+    chown jenkins.jenkins {{ jenkins_home }}/slave.jar
+end script
+
+env LANG=en_US.UTF-8
+
+exec start-stop-daemon --chuid jenkins:jenkins --start --quiet --exec /usr/bin/java -- \
+     -jar {{ jenkins_home }}/slave.jar -jnlpUrl http://localhost:{{ jenkins_port }}/jenkins/computer/{{ workername }}/slave-agent.jnlp -noCertificateCheck -secret {{ jnlp_secret }}

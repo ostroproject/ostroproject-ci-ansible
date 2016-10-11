@@ -1,0 +1,8 @@
+proxyhost: 192.168.174.1
+ntp: ntp.int
+munin_server_regexp: ^10\.230\.11\.101$
+jenkins_uid: 492
+jenkins_gid: 5005
+workers_network: 172.16.20.0/24
+store_base_path: /srv/ostro
+

@@ -1,0 +1,2 @@
+- name: a line in /etc/hosts
+  lineinfile: dest=/etc/hosts line='{{ line }}'

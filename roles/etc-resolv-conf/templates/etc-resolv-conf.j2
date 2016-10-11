@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+{% if resolv_conf_search is defined %}
+search {{ resolv_conf_search }}
+{% endif %}
+{% if resolv_conf_domain is defined %}
+domain {{ resolv_conf_domain }}
+{% endif %}
+{% for ns in resolv_conf_nameservers -%}
+nameserver {{ ns }}
+{% endfor %}

@@ -1,0 +1,11 @@
+- name: Install apache on openSUSE
+  zypper: name={{ item }} state=installed
+  with_items:
+   - apache2
+  when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap'
+
+- name: Install apache on Ubuntu
+  apt: name={{ item }} state=installed
+  with_items:
+   - apache2
+  when: ansible_distribution == 'Ubuntu'

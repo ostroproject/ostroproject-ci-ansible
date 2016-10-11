@@ -1,0 +1,7 @@
+jenkins_master_addr: localhost:9000
+jenkins_master_http_proto: http
+workername: ostro-tester-02
+jenkins_tester_dir: /home/tester/ostro-tester
+autossh_monitor_port: 20490
+gw_host: a1
+

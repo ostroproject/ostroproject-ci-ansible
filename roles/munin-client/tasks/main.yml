@@ -1,0 +1,20 @@
+- name: Install munin-node package
+  zypper: name={{ item }} state=installed
+  with_items:
+   - munin-node
+
+- name: munin var-run directory
+  file: path=/var/run/munin state=directory owner=munin group=munin mode=755
+
+- name: systemd munin-node
+  action: file state=link path=/etc/systemd/system/multi-user.target.wants/munin-node.service
+    src=/usr/lib/systemd/system/munin-node.service force=yes
+
+- name: Munin server address
+  lineinfile:
+    state: present
+    dest: /etc/munin/munin-node.conf
+    line: 'allow {{ munin_server_regexp }}'
+
+- name: make sure munin-node is running and enabled
+  service: name=munin-node state=running enabled=yes

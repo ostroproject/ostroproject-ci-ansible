@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+	<actions/>
+	<description/>
+	<keepDependencies>false</keepDependencies>
+	<properties>
+		<com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.25">
+			<autoRebuild>false</autoRebuild>
+			<rebuildDisabled>false</rebuildDisabled>
+		</com.sonyericsson.rebuild.RebuildSettings>
+		<com.synopsys.arc.jenkinsci.plugins.jobrestrictions.jobs.JobRestrictionProperty plugin="job-restrictions@0.4"/>
+	</properties>
+	<scm class="hudson.scm.NullSCM"/>
+	<canRoam>true</canRoam>
+	<disabled>false</disabled>
+	<blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+	<blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+	<triggers/>
+	<concurrentBuild>false</concurrentBuild>
+	<builders>
+		<javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.43">
+			<targets>ci_initial_seed.groovy</targets>
+			<usingScriptText>false</usingScriptText>
+			<ignoreExisting>false</ignoreExisting>
+			<removedJobAction>DISABLE</removedJobAction>
+			<removedViewAction>IGNORE</removedViewAction>
+			<lookupStrategy>JENKINS_ROOT</lookupStrategy>
+			<additionalClasspath/>
+		</javaposse.jobdsl.plugin.ExecuteDslScripts>
+	</builders>
+	<publishers/>
+	<buildWrappers/>
+</project>

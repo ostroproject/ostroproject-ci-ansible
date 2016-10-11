@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+BOOTPROTO='static'
+{% if bridge_ports is defined %}
+BRIDGE='yes'
+BRIDGE_FORWARDDELAY='0'
+BRIDGE_PORTS='{{ bridge_ports }}'
+BRIDGE_STP='off'
+{% endif %}
+BROADCAST=''
+ETHTOOL_OPTIONS=''
+IPADDR='{{ ipaddr }}'
+{% if lladdr is defined %}
+LLADDR='{{ lladdr }}'
+{% endif %}
+MTU=''
+NAME=''
+NETMASK=''
+NETWORK=''
+REMOTE_IPADDR=''
+STARTMODE='auto'

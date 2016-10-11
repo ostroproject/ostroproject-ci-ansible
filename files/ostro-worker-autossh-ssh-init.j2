@@ -1,0 +1,10 @@
+description "autossh tunnel"
+ 
+    start on (local-filesystems and net-device-up IFACE={{ autossh_iface }})
+    stop on runlevel [016]
+ 
+    respawn
+    respawn limit 5 60
+ 
+    exec start-stop-daemon --chuid autossh:autossh --start --quiet --exec /usr/bin/autossh -- \
+                -M {{ autossh_monitor_port }} -N {{ gw_host }}

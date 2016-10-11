@@ -1,0 +1,3 @@
+{% if ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap' %}
+nagios ALL = NOPASSWD: /usr/bin/zypper ref,/usr/bin/zypper sl,/usr/bin/zypper --xmlout --non-interactive list-updates -t package -t patch
+{% endif %}

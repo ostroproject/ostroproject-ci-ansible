@@ -1,0 +1,2 @@
+- name: restart jenkins-worker
+  service: name=jenkins-worker state=restarted

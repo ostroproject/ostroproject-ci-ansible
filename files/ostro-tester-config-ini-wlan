@@ -1,0 +1,4 @@
+[Connect]
+type=broadcast
+ssid=AutoTesting
+passwd=1234654321

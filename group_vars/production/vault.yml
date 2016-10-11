@@ -1,0 +1,11 @@
+---
+# production variables
+jenkins_auth:
+  user: "your-ci-user"
+  token: "your-ci-user-token"
+github_org: "yourorg"
+github_org_private: "yourorg"
+autossh_privkey: |
+  -----BEGIN EC PRIVATE KEY-----
+  your-private-key
+  -----END EC PRIVATE KEY-----

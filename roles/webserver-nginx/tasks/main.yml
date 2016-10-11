@@ -1,0 +1,11 @@
+- name: Install nginx on openSUSE
+  zypper: name={{ item }} state=installed
+  with_items:
+   - nginx
+  when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap'
+
+- name: Install nginx on Ubuntu
+  apt: name={{ item }} state=installed
+  with_items:
+   - nginx
+  when: ansible_distribution == 'Ubuntu'

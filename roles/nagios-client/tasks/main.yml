@@ -1,0 +1,10 @@
+- name: put allow setting to /etc/nrpe.d/
+  template: src=allow.j2 dest=/etc/nrpe.d/allow.cfg mode=0644 owner=root group=root
+
+#- name: Create systemd nrpe link
+#  action: file state=link
+#    path=/etc/systemd/system/multi-user.target.wants/nrpe.service
+#    src=/usr/lib/systemd/system/nrpe.service force=yes
+
+- name: make sure nrpe is running and enabled
+  service: name=nrpe state=running enabled=yes

@@ -1,0 +1,3 @@
+---
+- name: setup global proxy config
+  template: src=proxy.j2 dest=/etc/sysconfig/proxy mode=0644

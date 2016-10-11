@@ -1,0 +1,3 @@
+workername: download
+jenkins_host: 10.0.16.54
+jenkins_port: 8000

@@ -1,0 +1,6 @@
+---
+website_url: https://stg.ostroproject.org
+download_url: https://download.ostroproject.org/.stg
+jenkins_url: "{{ website_url }}/jenkins"
+jenkins_port: 9000
+bb_cache_dir: /mnt/bb-cache-stg

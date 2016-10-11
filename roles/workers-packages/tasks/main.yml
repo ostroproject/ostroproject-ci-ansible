@@ -1,0 +1,19 @@
+- name: Install ostro-workers-public specific packages on Fedora
+  yum: name={{ item }} state=present
+  with_items:
+    - socat
+  when: ansible_distribution == 'Fedora'
+
+- name: Install ostro-workers-public specific packages on openSUSE
+  zypper: name={{ item }} state=present
+  with_items:
+    - socat
+  when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap'
+
+- name: Install ostro-workers-public specific packages on Ubuntu
+  apt: name={{ item }} state=present
+  with_items:
+    - nfs-common
+    - gdisk
+    - unzip
+  when: ansible_distribution == 'Ubuntu'

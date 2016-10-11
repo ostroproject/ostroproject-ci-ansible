@@ -1,0 +1,4 @@
+# for osrobot-jenkins-config-hub.j2
+jenkins_hub:
+  user: "your-ci-user"
+  oauth_token: "your-ci-user-token"

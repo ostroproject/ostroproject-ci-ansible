@@ -1,0 +1,5 @@
+- name: store basepath directory exists
+  file: state=directory path={{ store_base_path }} mode=755 owner={{ jenkins_uid }} group={{ jenkins_gid }}
+
+- name: nfs mount of store_base from store server
+  mount: name={{ store_base_path }} src=ostrostore.ost.int:{{ store_base_path }} fstype=nfs state=mounted

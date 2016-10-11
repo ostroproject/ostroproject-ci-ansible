@@ -1,0 +1,47 @@
+    - name: Install jre capability for jenkins slave on Fedora
+      yum: name={{ item }} state=present
+      with_items:
+       - jffi
+       - jffi-native
+       - java
+      when: ansible_distribution == 'Fedora'
+
+    - name: Install jre capability for jenkins slave on openSUSE
+      zypper: name={{ item }} state=present
+      with_items:
+       - java
+      when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap'
+
+    - name: Install jre capability for jenkins slave on Ubuntu
+      apt: name={{ item }} state=present
+      with_items:
+       - default-jre-headless
+      when: ansible_distribution == 'Ubuntu'
+
+# Note: its important to have worker jenkins user as uid={{ jenkins_uid }} gid={{ jenkins_gid }} to allow NFS access
+    - user: name=jenkins uid={{ jenkins_uid }} shell=/bin/bash home={{ jenkins_home }} comment='Jenkins user'
+    - group: name=jenkins gid={{ jenkins_gid }}
+
+    - name: jenkins home /var/lib/jenkins exists on Fedora
+      file: state=directory path=/var/lib/jenkins mode=700 owner=jenkins group=jenkins
+      when: ansible_distribution == 'Fedora'
+
+#    - name: store basepath directory exists
+#      file: state=directory path={{ store_base_path }} mode=755 owner={{ jenkins_uid }} group={{ jenkins_gid }}
+
+    - name: jenkins home {{ jenkins_home }} exists on Ubuntu
+      file: state=directory path={{ jenkins_home }} mode=700 owner=jenkins group=jenkins
+      when: ansible_distribution == 'Ubuntu'
+
+    - name: put jenkins-worker.service to /etc/systemd/
+      template: src=ostro-worker-jenkins-worker-service.j2 dest=/etc/systemd/system/jenkins-worker.service mode=0644 owner=root group=root
+      when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap'
+
+    - name: put jenkins-worker.conf to /etc/init/
+      template: src=ostro-worker-jenkins-worker-init.j2 dest=/etc/init/jenkins-worker.conf mode=0644 owner=root group=root
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '14'
+      notify:
+        - restart jenkins-worker
+
+    - name: jenkins-worker is enabled and running
+      service: name=jenkins-worker state=running enabled=yes

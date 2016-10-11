@@ -1,0 +1,4 @@
+- name: put ifcfg entry for {{ ifname }}
+  template: src=etc-sysconfig-network-ifcfg.j2
+    dest=/etc/sysconfig/network/ifcfg-{{ ifname }}
+    mode=0600 owner=root group=root

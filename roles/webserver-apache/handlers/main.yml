@@ -1,0 +1,6 @@
+---
+- name: reload and restart apache
+  service: name=apache2 state="{{item}}"
+  with_items:
+  - reloaded
+  - restarted

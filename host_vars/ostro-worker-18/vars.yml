@@ -1,0 +1,3 @@
+workername: ostro-worker-18
+autossh_monitor_port: 20180
+gw_host: a2

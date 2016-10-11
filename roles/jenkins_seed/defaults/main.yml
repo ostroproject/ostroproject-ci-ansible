@@ -1,0 +1,3 @@
+---
+  seed_job: "ci_seed_initial"
+  seed_job_config: "{{ lookup('template', '{{ seed_job }}.xml.j2') }}"

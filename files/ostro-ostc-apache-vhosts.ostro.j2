@@ -1,0 +1,23 @@
+#
+# VirtualHosts serving http
+#
+<VirtualHost {{ ansible_fqdn }}:80>
+    Alias /download /srv/download/
+    <Directory /srv/download>
+      AllowOverride None
+      Require all granted
+      DirectoryIndex disabled
+      Options Indexes FollowSymlinks
+    </Directory>
+</VirtualHost>
+
+<VirtualHost {{ coord_addr_on_workernet }}:80>
+    ServerName {{ coord_addr_on_workernet }}:80
+    Alias /download /srv/download/
+    <Directory /srv/download>
+      AllowOverride None
+      Require all granted
+      DirectoryIndex disabled
+      Options Indexes FollowSymlinks
+    </Directory>
+</VirtualHost>

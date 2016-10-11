@@ -1,0 +1,20 @@
+Host {{ gw_host }}
+    User autossh
+    StrictHostKeyChecking no
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+    IdentityFile ~/.ssh/autossh.key
+    LocalForward 8050 osrobot.vlan14:8050
+    LocalForward 8000 osrobot.vlan14:8000
+    LocalForward 9050 stg-osrobot.vlan14:9050
+    LocalForward 9000 stg-osrobot.vlan14:9000
+    LocalForward 8873  osdownload.vlan1:873
+{% if ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap' %}
+    ProxyCommand /usr/bin/nc -x {{ proxyhost}}:1080 %h %p
+{% endif %}
+{% if ansible_distribution == 'Fedora' %}
+    ProxyCommand socat STDIO SOCKS4:{{ proxyhost }}:%h:%p
+{% endif %}
+{% if  ansible_distribution == 'Ubuntu' %}
+    ProxyCommand nc -X 5 -x {{ autossh_proxy }} %h %p
+{% endif %}

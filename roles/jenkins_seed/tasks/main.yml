@@ -1,0 +1,69 @@
+---
+- name: Check for existence of job
+  uri:
+    url: "{{ jenkins_url }}/job/{{ seed_job }}/config.xml"
+    user: "{{ jenkins_auth.user }}"
+    password: "{{ jenkins_auth.token }}"
+    force_basic_auth: yes
+    validate_certs: no
+    return_content: yes
+  delegate_to: localhost
+  register: job_config
+  ignore_errors: True
+
+- name: Job fetch debug
+  debug: var=job_config
+
+- name: Need to create seed job
+  debug: msg="Need to create seed job"
+  when: job_config.status == 404
+
+- name: Name for debug module.
+  debug: var=seed_job_config
+
+- name: Create seed job
+  uri:
+    url: "{{ jenkins_url }}/createItem?name={{ seed_job }}"
+    method: POST
+    body: "{{ seed_job_config }}"
+    HEADER_Content-Type: "application/xml"
+    user: "{{ jenkins_auth.user }}"
+    password: "{{ jenkins_auth.token }}"
+    force_basic_auth: yes
+    validate_certs: no
+    return_content: yes
+    status_code: 200
+    body_format: raw
+  delegate_to: localhost
+  register: create_job_config
+  ignore_errors: True
+  when: job_config.status == 404
+
+- name: Debug job creation
+  debug: var=create_job_config
+
+- name: Check for seed job update
+  debug: msg="Job need update"
+  when: job_config.content != seed_job_config and job_config.status != 404
+
+- name: Update seed job
+  uri:
+    url: "{{ jenkins_url }}/job/{{ seed_job }}/config.xml"
+    method: POST
+    body: "{{ seed_job_config }}"
+    HEADER_Content-Type: "application/xml"
+    user: "{{ jenkins_auth.user }}"
+    password: "{{ jenkins_auth.token }}"
+    force_basic_auth: yes
+    validate_certs: no
+    return_content: yes
+    status_code: 200
+  delegate_to: localhost
+  register: update_job_config
+  ignore_errors: True
+  # when: False
+  when: job_config.content != seed_job_config and job_config.status != 404
+
+- name: update result
+  debug: var=update_job_config
+  when: update_job_config is defined

@@ -1,0 +1,4 @@
+Host github.com
+   User git
+   StrictHostKeyChecking no
+   ProxyCommand socat STDIO SOCKS4:{{ git_ssh_proxy }}:%h:%p

@@ -1,0 +1,3 @@
+workername: ostro-bld-14
+autossh_monitor_port: 21140
+gw_host: a2

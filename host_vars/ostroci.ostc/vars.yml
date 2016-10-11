@@ -1,0 +1,20 @@
+# one of two below choices should be active at a time
+#webserver: apache2
+webserver: nginx
+
+# these are common for all web servers
+ci_server_alias: ostroci.ost.int
+web_document_root: /var/www/html
+download_location: /download
+num_webserver_workers: "{{ groups['production-docker-workers-ubuntu'] | length }}"
+
+# for connecting as jenkins worker
+jenkins_home: /home/jenkins
+workername: ci-coordinator
+autossh_monitor_port: 21500
+gw_host: a2
+autossh_proxy: 172.16.20.1:1080
+autossh_iface: eth1
+
+# for directory structure
+build_storage_base: /srv/ostro/ostro-os

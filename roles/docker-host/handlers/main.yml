@@ -1,0 +1,7 @@
+
+# metadataprofile option does not work with lvchange @ Ubuntu 14.04, thus disable
+#- name: activate lvm profile
+#  command: "lvchange --metadataprofile docker-thinpool docker/thinpool"
+
+- name: restart docker
+  service: name=docker state=restarted

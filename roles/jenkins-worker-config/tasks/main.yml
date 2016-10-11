@@ -1,0 +1,8 @@
+    - name: put gitconfig for jenkins
+      copy: src=ostro-jenkins-gitconfig dest={{ jenkins_home }}/.gitconfig mode=0664 owner=jenkins group=jenkins
+
+    - name: jenkins/.ssh directory exists
+      file: state=directory path={{ jenkins_home }}/.ssh mode=700 owner=jenkins group=jenkins
+
+    - name: put jenkins ssh config
+      template: src=ostro-worker-jenkins-ssh-config.j2 dest={{ jenkins_home }}/.ssh/config mode=0644 owner=jenkins group=jenkins

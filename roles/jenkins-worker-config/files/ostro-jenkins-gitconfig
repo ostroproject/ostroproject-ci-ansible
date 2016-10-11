@@ -1,0 +1,9 @@
+#[core]
+#        gitproxy = /usr/local/bin/gitproxy
+[user]
+        email = ci@ostroproject.org
+        name = Ostro OS CI
+[credential]
+        helper = store
+[hub]
+        protocol = https

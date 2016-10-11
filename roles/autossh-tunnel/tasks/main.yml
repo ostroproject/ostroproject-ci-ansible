@@ -1,0 +1,40 @@
+- name: Install autossh tunnel specific packages on Fedora
+  yum: name={{ item }} state=present
+  with_items:
+    - autossh
+  when: ansible_distribution == 'Fedora'
+
+- name: Install autossh tunnel specific packages on openSUSE
+  zypper: name={{ item }} state=present
+  with_items:
+    - autossh
+  when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap'
+
+- name: Install autossh tunnel specific packages on Ubuntu
+  apt: name={{ item }} state=present
+  with_items:
+    - autossh
+  when: ansible_distribution == 'Ubuntu'
+
+- user: name=autossh shell=/bin/bash comment='Ostro worker autossh agent'
+- group: name=autossh
+
+- name: autossh .ssh directory exists
+  file: state=directory path=/home/autossh/.ssh mode=700 owner=autossh group=users
+
+- name: put autossh private key
+  copy: content="{{ ostroauto_privkey }}" dest=/home/autossh/.ssh/autossh.key mode=0400 owner=autossh group=autossh
+
+- name: put autossh ssh config
+  template: src=files/ostro-worker-autossh-ssh-config.j2 dest=/home/autossh/.ssh/config mode=0600 owner=autossh group=autossh
+
+- name: put autossh.service in systemd case
+  template: src=files/ostro-worker-autossh-ssh-service.j2 dest=/etc/systemd/system/autossh.service mode=0644 owner=root group=root
+  when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap' or ansible_distribution == 'Fedora'
+
+- name: put autossh.service in init case
+  template: src=files/ostro-worker-autossh-ssh-init.j2 dest=/etc/init/autossh.conf mode=0644 owner=root group=root
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_major_version == '14'
+
+- name: autossh is enabled and running
+  service: name=autossh state=running enabled=yes

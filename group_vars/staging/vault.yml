@@ -1,0 +1,7 @@
+---
+# staging variables
+jenkins_auth:
+  user: "your-ci-user"
+  token: "replace-with-your-token"
+github_org: "yourorg"
+github_org_private: "yourorg"

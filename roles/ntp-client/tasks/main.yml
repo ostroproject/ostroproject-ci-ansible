@@ -1,0 +1,28 @@
+- name: ntp installed on openSUSE
+  zypper: name=ntp state=installed
+  when: ansible_distribution == 'Suse' or ansible_distribution == 'openSUSE Leap'
+
+- name: ntp installed on Fedora or Centos
+  yum: name=ntp state=installed
+  when: ansible_distribution == 'Fedora' or
+        ansible_distribution == 'CentOS'
+
+- name: ntp installed on Ubuntu
+  apt: name=ntp state=installed
+  when: ansible_distribution == 'Ubuntu'
+
+- name: NTP server config
+  template: src=ntp-conf.{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.j2
+    dest=/etc/ntp.conf
+    mode=0644 owner=root group=root
+  notify:
+    - restart ntp
+    - restart ntpd
+
+- name: be sure ntp is running and enabled
+  service: name=ntp state=running enabled=yes
+  when: ansible_distribution == 'Ubuntu'
+
+- name: be sure ntpd is running and enabled
+  service: name=ntpd state=running enabled=yes
+  when: ansible_distribution != 'Ubuntu'
